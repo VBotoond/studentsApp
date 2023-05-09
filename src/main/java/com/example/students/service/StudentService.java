@@ -3,16 +3,9 @@ package com.example.students.service;
 import com.example.students.exceptions.InvalidEmailException;
 import com.example.students.exceptions.StudentNotFoundException;
 import com.example.students.model.Student;
-import com.example.students.model.StudentRequest;
 import com.example.students.repository.StudentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -20,6 +13,9 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
     public void addStudent(Student student) throws InvalidEmailException {
 
         validateEmail(student.getEmail(), student.getId());
@@ -82,9 +78,7 @@ public class StudentService {
                 .orElseThrow(() -> new StudentNotFoundException(id));
     }
 
-    public StudentService(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
-    }
+
 }
 
 

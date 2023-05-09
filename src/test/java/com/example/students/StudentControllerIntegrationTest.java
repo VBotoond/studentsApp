@@ -5,7 +5,6 @@ import com.example.students.model.Student;
 import com.example.students.model.StudentRequest;
 import com.example.students.repository.StudentRepository;
 import com.example.students.service.StudentService;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
@@ -37,20 +35,21 @@ public class StudentControllerIntegrationTest {
     private TestRestTemplate restTemplate;
 
 
-
+    @MockBean
+    private StudentRepository studentRepository;
     @Autowired
     private StudentService studentService;
 
-    @MockBean
-    private StudentRepository studentRepository;
 
-    @Before
+
+    @BeforeEach
     public void setUp() {
         studentService = new StudentService(studentRepository);
     }
 
     @Test
     public void testAddStudent() {
+
         StudentRequest request = new StudentRequest("John Doe", "john_doe@example.com");
         ResponseEntity<Void> response = restTemplate.postForEntity("/add", request, Void.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());

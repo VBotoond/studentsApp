@@ -5,8 +5,6 @@ import com.example.students.exceptions.StudentNotFoundException;
 import com.example.students.model.Student;
 import com.example.students.model.StudentRequest;
 import com.example.students.service.StudentService;
-import jakarta.transaction.Transactional;
-import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +12,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
-
-import com.example.students.service.StudentService.*;
 
 @RestController
 
@@ -59,7 +54,7 @@ public class StudentController {
         try {
             studentService.addStudent(student);
             log.info("Added student with id {}", student.getId());
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body("Student added successfully");
         } catch (InvalidEmailException e) {
             log.error("Invalid email exception occurred: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -77,18 +72,18 @@ public class StudentController {
      * or  ResponseEntity with status 400 (Bad Request) if the email is invalid
      */
     @PutMapping("/update")
-    public ResponseEntity<Void> updateStudent(@RequestBody Student student) {
+    public ResponseEntity<String> updateStudent(@RequestBody Student student) {
         log.info("Updating student with id {}", student.getId());
         try {
             studentService.updateStudent(student);
             log.info("Student with id {} updated", student.getId());
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body("Student updated successfully!");
         } catch (StudentNotFoundException e) {
             log.error("Student not found exception occurred: {}", e.getMessage());
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body("No student with the provided ID exists!");
         } catch (InvalidEmailException e) {
             log.error("Invalid email exception occurred: {}", e.getMessage());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("The given e-mail is either invalid, or used already");
         }
     }
 
@@ -99,16 +94,16 @@ public class StudentController {
      * @throws StudentNotFoundException if the student with the specified ID was not found
      */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable UUID id) {
+    public ResponseEntity<String> deleteStudent(@PathVariable UUID id) {
         log.info("Deleting student with id {}", id);
 
         try {
             studentService.deleteStudent(id);
             log.info("Student with id {} deleted", id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body("Student with id: " +id + " has been deleted successfully!");
         } catch (StudentNotFoundException e) {
             log.error("Student not found exception occurred: {}", e.getMessage());
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body("No student with the provided ID exists!");
         }
     }
 }
